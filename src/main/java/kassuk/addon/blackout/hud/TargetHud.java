@@ -10,12 +10,14 @@ import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
+import meteordevelopment.meteorclient.systems.hud.screens.HudEditorScreen;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -171,6 +173,12 @@ public class TargetHud extends HudElement {
 
     @Override
     public void render(HudRenderer renderer) {
+        if (target == null) {
+            renderSkinTextures = HudEditorScreen.isOpen() ? DefaultSkinHelper.getSteve() : null;
+        } else {
+            renderSkinTextures = target.getSkinTextures();
+        }
+
         if (mode.get() == Mode.Blackout) {
             int height = 100;
             int width = 200;
@@ -199,7 +207,9 @@ public class TargetHud extends HudElement {
             RenderUtils.rounded(stack, 15, 15, width - 30, height - 30, 15, 10, bgColor.get().getPacked());
 
             // Face
-            drawFace(renderer, scaleAnimation * scale.get().floatValue(), x + (1 - scaleAnimation) * getWidth() / 2f, y + (1 - scaleAnimation) * getHeight() / 2f, tilt);
+            if (renderSkinTextures != null) {
+                drawFace(renderer, scaleAnimation * scale.get().floatValue(), x + (1 - scaleAnimation) * getWidth() / 2f, y + (1 - scaleAnimation) * getHeight() / 2f, tilt);
+            }
 
             // Name
             RenderUtils.text(renderName, stack, 60, 20, textColor.get().getPacked());
@@ -245,7 +255,9 @@ public class TargetHud extends HudElement {
             // Face
             RenderUtils.quad(stack, 1, 1, 58, 58, new Color(102, 102, 102, 255).getPacked());
 
-            drawFace(renderer, scale.get().floatValue(), x, y, 0);
+            if (renderSkinTextures != null) {
+                drawFace(renderer, scale.get().floatValue(), x, y, 0);
+            }
 
             // Name
             stack.scale(2.0f,2.0f,1);
@@ -351,7 +363,7 @@ public class TargetHud extends HudElement {
         drawStack.scale(scale, scale, 1);
         drawStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
 
-        PlayerSkinDrawer.draw(renderer.drawContext, renderSkinTextures,20, 18,32, 0);
+        PlayerSkinDrawer.draw(renderer.drawContext, renderSkinTextures, 20, 18, 32, -1);
 
         drawStack.pop();
     }

@@ -11,12 +11,12 @@ public interface IInteractEntityC2SPacket {
     @Accessor("entityId")
     @Final
     @Mutable
-    void setId(final int id);
+    void blackout$setId(final int id);
 
     @Accessor("entityId")
-    int getId();
+    int blackout$getId();
 
     @Accessor("type")
-    PlayerInteractEntityC2SPacket.InteractTypeHandler getType();
+    PlayerInteractEntityC2SPacket.InteractTypeHandler blackout$getType();
 }
 

@@ -9,7 +9,6 @@ package kassuk.addon.blackout.utils;
 import com.mojang.authlib.properties.Property;
 import kassuk.addon.blackout.mixins.AccessorNbtCompound;
 import kassuk.addon.blackout.mixins.IInteractEntityC2SPacket;
-import meteordevelopment.meteorclient.mixininterface.IPlayerInteractEntityC2SPacket;
 import net.minecraft.advancement.AdvancementEntry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapDecoration;
@@ -111,7 +110,7 @@ public class PacketNames {
         c2s(PlayerActionC2SPacket.class, "PlayerAction", packet -> "action: " + packet.getAction().name() + "pos: " + packet.getPos().toShortString() + " direction: " + packet.getDirection().getName() + " sequence: " + packet.getSequence());
         // FML // c2s(PlayerInputC2SPacket.class, "PlayerInput", packet -> "forward: " + packet.getForward() + " sideways: " + packet.getSideways() + " isJumping: " + packet.isJumping() + " isSneaking: " + packet.isSneaking());
         c2s(PlayerInteractBlockC2SPacket.class, "PlayerInteractBlock", packet -> "hand: " + packet.getHand().name() + " blockPos: " + packet.getBlockHitResult().getBlockPos().toShortString() + " pos: " + packet.getBlockHitResult().getPos().toString() + " side: " + packet.getBlockHitResult().getSide() + " isInsideBlock: " + packet.getBlockHitResult().isInsideBlock() + " type: " + packet.getBlockHitResult().getType().name() + " sequence: " + packet.getSequence());
-        c2s(PlayerInteractEntityC2SPacket.class, "PlayerInteractEntity", packet -> "id: " + ((IInteractEntityC2SPacket) packet).getId() + " type: " + ((IInteractEntityC2SPacket) packet).getType().getType().name() + " isPlayerSneaking: " + packet.isPlayerSneaking());
+        c2s(PlayerInteractEntityC2SPacket.class, "PlayerInteractEntity", packet -> "id: " + ((IInteractEntityC2SPacket) packet).blackout$getId() + " type: " + ((IInteractEntityC2SPacket) packet).blackout$getType().getType().name() + " isPlayerSneaking: " + packet.isPlayerSneaking());
         c2s(PlayerInteractItemC2SPacket.class, "PlayerInteractItem", packet -> "hand: " + packet.getHand().name() + " sequence: " + packet.getSequence());
 
         c2s(PlayerMoveC2SPacket.Full.class, "PlayerMove Full", packet -> "x: " + packet.getX(0) + " y: " + packet.getY(0) + " z: " + packet.getZ(0) + " yaw: " + packet.getYaw(0) + " pitch: " + packet.getPitch(0) + " isOnGround: " + packet.isOnGround());
@@ -251,7 +250,7 @@ public class PacketNames {
             StringBuilder builder = new StringBuilder("pos: " + packet.getPos().toShortString() + " blockEntityType: ");
             builder.append(packet.getBlockEntityType().getRegistryEntry().getIdAsString());
             builder.append(" nbt: {");
-            ((AccessorNbtCompound) packet.getNbt()).getEntries().forEach((string, element) -> builder.append("\n  ").append(string).append(" ").append(element.asString()));
+            ((AccessorNbtCompound) packet.getNbt()).blackout$getEntries().forEach((string, element) -> builder.append("\n  ").append(string).append(" ").append(element.asString()));
             builder.append("\n}");
             return builder.toString();
         });
@@ -443,7 +442,7 @@ public class PacketNames {
         s2c(NbtQueryResponseS2CPacket.class, "NbtQueryResponse", packet -> {
             StringBuilder builder = new StringBuilder("transactionId: " + packet.getTransactionId());
             builder.append(" nbt: {");
-            ((AccessorNbtCompound) packet.getNbt()).getEntries().forEach((string, element) -> builder.append("\n  ").append(string).append(" ").append(element.asString()));
+            ((AccessorNbtCompound) packet.getNbt()).blackout$getEntries().forEach((string, element) -> builder.append("\n  ").append(string).append(" ").append(element.asString()));
             builder.append("\n}");
             return builder.toString();
         });

@@ -20,5 +20,5 @@ import java.util.Map;
 @Mixin(NbtCompound.class)
 public interface AccessorNbtCompound {
     @Accessor("entries")
-    Map<String, NbtElement> getEntries();
+    Map<String, NbtElement> blackout$getEntries();
 }

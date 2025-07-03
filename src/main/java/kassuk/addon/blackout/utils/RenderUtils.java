@@ -2,6 +2,7 @@ package kassuk.addon.blackout.utils;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.ShaderProgramKeys;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.BufferAllocator;
 import net.minecraft.client.util.math.MatrixStack;
@@ -27,7 +28,7 @@ public class RenderUtils {
         float b = (float) ColorHelper.getBlue(color) / 255.0F;
 
         RenderSystem.enableBlend();
-        // IDK AM I FUCKED // RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
 
@@ -60,7 +61,7 @@ public class RenderUtils {
         float b = (float) ColorHelper.getBlue(color) / 255.0F;
 
         RenderSystem.enableBlend();
-        // IDK AM I FUCKED // RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        RenderSystem.setShader(ShaderProgramKeys.POSITION_COLOR);
 
         BufferBuilder bufferBuilder = Tessellator.getInstance().begin(VertexFormat.DrawMode.TRIANGLE_FAN, VertexFormats.POSITION_COLOR);
 

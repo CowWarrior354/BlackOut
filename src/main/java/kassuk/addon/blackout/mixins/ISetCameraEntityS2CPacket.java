@@ -7,5 +7,5 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(SetCameraEntityS2CPacket.class)
 public interface ISetCameraEntityS2CPacket {
     @Accessor("entityId")
-    int getId();
+    int blackout$getId();
 }

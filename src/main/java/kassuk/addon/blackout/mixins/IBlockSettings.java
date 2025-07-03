@@ -7,6 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(AbstractBlock.Settings.class)
 public interface IBlockSettings {
     @Accessor("replaceable")
-    boolean replaceable();
+    boolean blackout$replaceable();
 }
 

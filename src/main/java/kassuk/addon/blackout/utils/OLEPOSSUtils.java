@@ -87,7 +87,7 @@ public class OLEPOSSUtils {
 
     @SuppressWarnings("DataFlowIssue")
     public static boolean replaceable(BlockPos block) {
-        return ((IBlockSettings) AbstractBlock.Settings.copy(mc.world.getBlockState(block).getBlock())).replaceable();
+        return ((IBlockSettings) AbstractBlock.Settings.copy(mc.world.getBlockState(block).getBlock())).blackout$replaceable();
     }
 
     public static boolean solid2(BlockPos block) {

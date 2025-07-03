@@ -3,14 +3,19 @@
   "id": "blackout",
   "version": "${version}",
   "name": "Blackout",
-  "description": "Epik cheetos addon.",
+  "description": "Meteor Client addon focusing on CrystalPVP.",
   "authors": [
-    "KassuK, OLEPOSSU, and H1ggsK"
+    "KassuK",
+    "OLEPOSSU",
+    "H1ggsK",
+    "Crosby"
   ],
   "contact": {
-    "repo": "https://github.com/H1ggsK/BlackOut/"
+    "sources": "https://github.com/RacoonDog/BlackOut/",
+    "issues": "https://github.com/RacoonDog/BlackOut/issues"
   },
   "icon": "assets/blackout/logo.png",
+  "license": "GPL-3.0-or-later",
   "environment": "client",
   "entrypoints": {
     "meteor": [
@@ -25,7 +30,7 @@
     "meteor-client:color": "225,25,25"
   },
   "depends": {
-    "java": ">=17",
+    "java": ">=21",
     "minecraft": ">=${mc_version}",
     "meteor-client": "*"
   }

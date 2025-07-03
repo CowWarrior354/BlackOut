@@ -7,11 +7,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(PlayerMoveC2SPacket.class)
 public interface IPlayerMoveC2SPacket {
     @Accessor("x")
-    double getX();
+    double blackout$getX();
 
     @Accessor("y")
-    double getY();
+    double blackout$getY();
 
     @Accessor("z")
-    double getZ();
+    double blackout$getZ();
 }

@@ -9,5 +9,5 @@ import java.util.UUID;
 @Mixin(SpectatorTeleportC2SPacket.class)
 public interface ISpectatorTeleportC2SPacket {
     @Accessor("targetUuid")
-    UUID getID();
+    UUID blackout$getID();
 }

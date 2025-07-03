@@ -58,7 +58,7 @@ public class FastXP extends BlackOutModule {
         if (mc.player == null || mc.world == null) return;
 
         if (mc.player.getMainHandStack().getItem() == Items.EXPERIENCE_BOTTLE  && mc.options.useKey.isPressed()){
-            ((AccessorMinecraftClient) mc).setItemUseCooldown(yeetDelay.get());
+            ((AccessorMinecraftClient) mc).blackout$setItemUseCooldown(yeetDelay.get());
 
             if (rotMode.get() == RotationMode.Silent && rotate.get())
                 Rotations.rotate(mc.player.getYaw(), pitch.get());

@@ -21,6 +21,7 @@ import net.minecraft.client.network.SequencedPacketCreator;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -36,7 +37,9 @@ import java.util.Objects;
  */
 
 public class BlackOutModule extends Module {
-    private final String prefix = Formatting.DARK_RED + "[BlackOut]";
+    private static final Text PREFIX = Text.literal("[BlackOut] ").formatted(Formatting.DARK_RED);
+    private static final Text ON = Text.literal("ON").formatted(Formatting.GREEN);
+    private static final Text OFF = Text.literal("OFF").formatted(Formatting.RED);
     public final int priority;
 
     public BlackOutModule(Category category, String name, String description) {
@@ -48,39 +51,45 @@ public class BlackOutModule extends Module {
     public void sendToggledMsg() {
         if (Config.get().chatFeedback.get() && chatFeedback && mc.world != null) {
             ChatUtils.forceNextPrefixClass(getClass());
-            String msg = prefix + " " + Formatting.WHITE + name + (isActive() ? Formatting.GREEN + " ON" : Formatting.RED + " OFF");
-            sendMessage(Text.of(msg), hashCode());
+            Text msg = Text.empty().append(PREFIX).append(name).append(ScreenTexts.SPACE).append(isActive() ? ON : OFF);
+            sendMessage(msg, hashCode());
         }
     }
 
     public void sendToggledMsg(String message) {
         if (Config.get().chatFeedback.get() && chatFeedback && mc.world != null) {
             ChatUtils.forceNextPrefixClass(getClass());
-            String msg = prefix + " " + Formatting.WHITE + name + (isActive() ? Formatting.GREEN + " ON " : Formatting.RED + " OFF ") + Formatting.GRAY + message;
-            sendMessage(Text.of(msg), hashCode());
+            Text msg = Text.empty().append(PREFIX).append(name).append(ScreenTexts.SPACE).append(isActive() ? ON : OFF).append(ScreenTexts.SPACE).append(
+                Text.literal(message).formatted(Formatting.GRAY)
+            );
+            sendMessage(msg, hashCode());
         }
     }
 
     public void sendDisableMsg(String text) {
         if (mc.world != null) {
             ChatUtils.forceNextPrefixClass(getClass());
-            String msg = prefix + " " + Formatting.WHITE + name + Formatting.RED + " OFF " + Formatting.GRAY + text;
-            sendMessage(Text.of(msg), hashCode());
+            Text msg = Text.empty().append(PREFIX).append(name).append(ScreenTexts.SPACE).append(OFF).append(
+                Text.literal(text).formatted(Formatting.GRAY)
+            );
+            sendMessage(msg, hashCode());
         }
     }
 
     public void sendBOInfo(String text) {
         if (mc.world != null) {
             ChatUtils.forceNextPrefixClass(getClass());
-            String msg = prefix + " " + Formatting.WHITE + name + " " + text;
-            sendMessage(Text.of(msg), Objects.hash(name + "-info"));
+            Text msg = Text.empty().append(PREFIX).append(name).append(ScreenTexts.SPACE).append(text);
+            sendMessage(msg, Objects.hash(name + "-info"));
         }
     }
     public void debug(String text) {
         if (mc.world != null) {
             ChatUtils.forceNextPrefixClass(getClass());
-            String msg = prefix + " " + Formatting.WHITE + name + " " + Formatting.AQUA + text;
-            sendMessage(Text.of(msg), 0);
+            Text msg = Text.empty().append(PREFIX).append(name).append(ScreenTexts.SPACE).append(
+                Text.literal(text).formatted(Formatting.AQUA)
+            );
+            sendMessage(msg, 0);
         }
     }
 

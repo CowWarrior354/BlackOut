@@ -10,9 +10,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface IRaycastContext {
     @Mutable
     @Accessor("start")
-    void setStart(Vec3d start);
+    void blackout$setStart(Vec3d start);
 
     @Mutable
     @Accessor("end")
-    void setEnd(Vec3d end);
+    void blackout$setEnd(Vec3d end);
 }

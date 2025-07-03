@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "client": [
     "AccessorMinecraftClient",
+    "AccessorNbtCompound",
     "IBlockSettings",
     "IEntityS2CPacket",
     "IEntitySetHeadYawS2CPacket",
@@ -14,6 +15,7 @@
     "ISetCameraEntityS2CPacket",
     "ISpectatorTeleportC2SPacket",
     "MixinClientCommonNetworkHandler",
+    "MixinClientConnection",
     "MixinClientPlayerInteractionManager",
     "MixinEntity",
     "MixinExplosion",
@@ -22,9 +24,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "AccessorNbtCompound",
-    "MixinClientConnection"
-  ]
+  }
 }
