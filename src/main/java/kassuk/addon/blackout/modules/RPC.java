@@ -13,7 +13,7 @@ import meteordevelopment.meteorclient.settings.StringListSetting;
 import meteordevelopment.meteorclient.utils.misc.MeteorStarscript;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
-import meteordevelopment.starscript.Script;
+import org.meteordev.starscript.Script;
 
 import java.util.ArrayList;
 import java.util.List;

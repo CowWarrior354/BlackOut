@@ -146,7 +146,7 @@ public class RaksuPath {
     }
 
     private boolean is(BlockPos pos) {
-        return ((AbstractBlockAccessor) mc.world.getBlockState(pos).getBlock()).isCollidable();
+        return ((AbstractBlockAccessor) mc.world.getBlockState(pos).getBlock()).meteor$isCollidable();
     }
 
     public record Movement(boolean valid, BlockPos pos, MovementType type) {

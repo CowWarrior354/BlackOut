@@ -67,6 +67,7 @@ public class BlackOut extends MeteorAddon {
         modules.add(new FeetESP());
         modules.add(new FlightPlus());
         // SORRY GUYS I'LL TRY T FIX IT // modules.add(new Fog());
+        // UPDATE: THIS AIN'T COMIN BACK FOR A WHILE LOL FUCK RENDERING
         modules.add(new ForceSneak());
         modules.add(new HoleFillPlus());
         modules.add(new HoleFillRewrite());

@@ -169,7 +169,7 @@ public class PacketNames {
         });
         c2s(UpdateCommandBlockC2SPacket.class, "UpdateCommandBlock", packet -> "command: " + packet.getCommand() + " pos: " + packet.getPos() + " isAlwaysActive: " + packet.isAlwaysActive() + " isConditional: " + packet.isConditional() + " shouldTrackOutput: " + packet.shouldTrackOutput() + " type: " + packet.getType().name());
         c2s(UpdateCommandBlockMinecartC2SPacket.class, "UpdateCommandBlockMinecart", packet -> "command: " + packet.getCommand() + " shouldTrackOutput: " + packet.shouldTrackOutput());
-        c2s(UpdateDifficultyC2SPacket.class, "UpdateDifficulty", packet -> "difficulty: " + packet.getDifficulty().getName());
+        c2s(UpdateDifficultyC2SPacket.class, "UpdateDifficulty", packet -> "difficulty: " + packet.difficulty().getName());
         c2s(UpdateDifficultyLockC2SPacket.class, "UpdateDifficultyLock", packet -> "isDifficultyLocked: " + packet.isDifficultyLocked());
         c2s(UpdateJigsawC2SPacket.class, "UpdateJigsaw", packet -> "name: " + packet.getName().toString() + " pos: " + packet.getPos().toShortString() + " finalState: " + packet.getFinalState() + " jointType: " + packet.getJointType().asString() + " target: " + packet.getTarget().toString() + " pool: " + packet.getPool().toString() + " placementPriority: " + packet.getPlacementPriority() + " selectionPriority: " + packet.getSelectionPriority());
         c2s(UpdatePlayerAbilitiesC2SPacket.class, "UpdatePlayerAbilities", packet -> "isFlying: " + packet.isFlying());
@@ -213,7 +213,7 @@ public class PacketNames {
 
         // login
         s2c(LoginCompressionS2CPacket.class, "LoginCompression", packet -> "compressionThreshold: " + packet.getCompressionThreshold());
-        s2c(LoginDisconnectS2CPacket.class, "LoginDisconnect", packet -> "reason: " + packet.getReason());
+        s2c(LoginDisconnectS2CPacket.class, "LoginDisconnect", packet -> "reason: " + packet.reason());
         s2c(LoginHelloS2CPacket.class, "LoginHello", packet -> "serverId: " + packet.getServerId() + " nonce: " + byteArrToString(packet.getNonce()));
         s2c(LoginQueryRequestS2CPacket.class, "LoginQueryRequest", packet -> "queryId: " + packet.queryId() + " payloadId: " + packet.payload().id());
         s2c(LoginSuccessS2CPacket.class, "LoginSuccess", packet -> {
@@ -325,7 +325,7 @@ public class PacketNames {
         s2c(CraftFailedResponseS2CPacket.class, "CraftFailedResponse", packet -> "syncId: " + packet.syncId());
         s2c(DamageTiltS2CPacket.class, "DamageTiltS2CPacket", packet -> "id: " + packet.id() + " yaw: " + packet.yaw());
         s2c(DeathMessageS2CPacket.class, "DeathMessage", packet -> "playerId: " + packet.playerId() + " message: " + packet.message().getString());
-        s2c(DifficultyS2CPacket.class, "Difficulty", packet -> "difficulty: " + packet.getDifficulty().getName() + " isDifficultyLocked: " + packet.isDifficultyLocked());
+        s2c(DifficultyS2CPacket.class, "Difficulty", packet -> "difficulty: " + packet.difficulty().getName() + " isDifficultyLocked: " + packet.difficultyLocked());
         s2c(EndCombatS2CPacket.class, "EndCombat");
         s2c(EnterCombatS2CPacket.class, "EnterCombat");
         s2c(EnterReconfigurationS2CPacket.class, "EnterReconfiguration");
