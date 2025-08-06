@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -111,10 +112,10 @@ public class ArmorHudPlus extends HudElement {
         }
 
         renderer.post(() -> {
-            Matrix3x2f drawStack = renderer.drawContext.getMatrices();
-            drawStack.push();
+            Matrix3x2fStack drawStack = renderer.drawContext.getMatrices();
+            drawStack.pushMatrix();
 
-            drawStack.translate(x, y, 0);
+            drawStack.translate((float) x, y, 0);
             drawStack.scale((float)(scale.get() * 2), (float)(scale.get() * 2), 1);
 
             for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
@@ -122,7 +123,7 @@ public class ArmorHudPlus extends HudElement {
                 renderer.drawContext.drawItem(itemStack, slot.getIndex() * 20 + 12, durMode.get() == DurMode.Top ? 10 : 0);
             }
 
-            drawStack.pop();
+            drawStack.popMatrix();
         });
     }
 

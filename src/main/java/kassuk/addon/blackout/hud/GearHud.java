@@ -12,6 +12,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 
@@ -71,15 +72,15 @@ public class GearHud extends HudElement {
         for (int i = 0; i < items.get().size(); i++) {
             int posY = (int) Math.round(y + i * 20 * scale.get() * scale.get());
 
-            Matrix3x2f drawStack = renderer.drawContext.getMatrices();
-            drawStack.push();
+            Matrix3x2fStack drawStack = renderer.drawContext.getMatrices();
+            drawStack.pushMatrix();
 
             drawStack.translate(x, y, 0);
             drawStack.scale((float)(scale.get() * scale.get()), (float)(scale.get() * scale.get()), 1);
 
             renderer.drawContext.drawItem(items.get().get(i).getDefaultStack(), x, posY);
 
-            drawStack.pop();
+            drawStack.popMatrix();
 
             renderer.text(getText(items.get().get(i).asItem()), x + 25 * scale.get() * scale.get(), posY, color.get(), shadow.get(), scale.get());
         }

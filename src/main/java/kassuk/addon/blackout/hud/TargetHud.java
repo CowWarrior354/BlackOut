@@ -25,6 +25,7 @@ import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix3x2f;
+import org.joml.Matrix3x2fStack;
 
 import java.util.*;
 
@@ -395,8 +396,8 @@ public class TargetHud extends HudElement {
 
             renderer.post(() -> {
                 //Armor
-                Matrix3x2f drawStack = renderer.drawContext.getMatrices();
-                drawStack.push();
+                Matrix3x2fStack drawStack = renderer.drawContext.getMatrices();
+                drawStack.pushMatrix();
 
                 drawStack.translate(x, y, 0);
                 drawStack.scale(scale.get().floatValue() * 1.35f, scale.get().floatValue() * 1.35f, 1);
@@ -412,24 +413,24 @@ public class TargetHud extends HudElement {
 
                 renderer.drawContext.drawItem(itemStack, 122, 25);
 
-                drawStack.pop();
+                drawStack.popMatrix();
             });
         }
     }
 
     private void drawFace(HudRenderer renderer, float scale, double x, double y, float tilt) {
         renderer.post(() -> {
-            Matrix3x2f drawStack = renderer.drawContext.getMatrices();
+            Matrix3x2fStack drawStack = renderer.drawContext.getMatrices();
 
-            drawStack.push();
+            drawStack.pushMatrix();
 
-            drawStack.translate(x, y, 0);
+            drawStack.translate((float) x, (float) y, 0);
             drawStack.scale(scale, scale, 1);
             drawStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
 
             PlayerSkinDrawer.draw(renderer.drawContext, renderSkinTextures, 20, 18, 32, -1);
 
-            drawStack.pop();
+            drawStack.popMatrix();
         });
     }
 
