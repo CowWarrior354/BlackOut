@@ -10,6 +10,7 @@ import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
+import org.joml.Matrix3x2f;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -110,7 +111,7 @@ public class ArmorHudPlus extends HudElement {
         }
 
         renderer.post(() -> {
-            MatrixStack drawStack = renderer.drawContext.getMatrices();
+            Matrix3x2f drawStack = renderer.drawContext.getMatrices();
             drawStack.push();
 
             drawStack.translate(x, y, 0);

@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import org.joml.Matrix3x2f;
 
 import java.util.*;
 
@@ -394,7 +395,7 @@ public class TargetHud extends HudElement {
 
             renderer.post(() -> {
                 //Armor
-                MatrixStack drawStack = renderer.drawContext.getMatrices();
+                Matrix3x2f drawStack = renderer.drawContext.getMatrices();
                 drawStack.push();
 
                 drawStack.translate(x, y, 0);
@@ -418,7 +419,7 @@ public class TargetHud extends HudElement {
 
     private void drawFace(HudRenderer renderer, float scale, double x, double y, float tilt) {
         renderer.post(() -> {
-            MatrixStack drawStack = renderer.drawContext.getMatrices();
+            Matrix3x2f drawStack = renderer.drawContext.getMatrices();
 
             drawStack.push();
 

@@ -11,6 +11,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import org.joml.Matrix3x2f;
 
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class GearHud extends HudElement {
         for (int i = 0; i < items.get().size(); i++) {
             int posY = (int) Math.round(y + i * 20 * scale.get() * scale.get());
 
-            MatrixStack drawStack = renderer.drawContext.getMatrices();
+            Matrix3x2f drawStack = renderer.drawContext.getMatrices();
             drawStack.push();
 
             drawStack.translate(x, y, 0);
