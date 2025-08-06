@@ -197,8 +197,8 @@ public class SpeedPlus extends BlackOutModule {
                 }
             }
 
-            double forward = mc.player.input.movementForward;
-            double sideways = mc.player.input.movementSideways;
+            double forward = mc.player.input.getMovementInput().y;
+            double sideways = mc.player.input.getMovementInput().x;
 
             double yaw = getYaw(forward, sideways);
 

@@ -1,15 +1,12 @@
 package kassuk.addon.blackout.hud;
 
 import kassuk.addon.blackout.BlackOut;
-import meteordevelopment.meteorclient.renderer.GL;
-import meteordevelopment.meteorclient.renderer.Renderer2D;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 /**
@@ -66,13 +63,16 @@ public class HudWaterMark extends HudElement {
         renderer.text(text, x, y, color.get(), true, scale.get());
 
         if (!logo.get()) {return;}
-        MatrixStack matrixStack = new MatrixStack();
 
-        GL.bindTexture(LOGO);
-        Renderer2D.TEXTURE.begin();
-        Renderer2D.TEXTURE.texQuad(x + renderer.textWidth(BlackOut.BLACKOUT_NAME + " v" + BlackOut.BLACKOUT_VERSION) * scale.get() * scale.get(),
-            y + renderer.textHeight(true) * scale.get() * scale.get() / 2 - logoScale.get() * 128 / 2,
-            logoScale.get() * 128, logoScale.get() * 128, new Color(255, 255, 255, 255));
-        Renderer2D.TEXTURE.render(matrixStack);
+        double textWidth = renderer.textWidth(text, true, scale.get());
+
+        renderer.texture(
+            LOGO,
+            x + textWidth,
+            y + renderer.textHeight(true, scale.get()) / 2 - logoScale.get() * 64,
+            logoScale.get() * 128,
+            logoScale.get() * 128,
+            Color.WHITE
+        );
     }
 }

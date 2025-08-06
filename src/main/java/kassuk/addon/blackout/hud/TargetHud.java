@@ -1,7 +1,6 @@
 package kassuk.addon.blackout.hud;
 
 import kassuk.addon.blackout.BlackOut;
-import kassuk.addon.blackout.utils.RenderUtils;
 import meteordevelopment.meteorclient.MeteorClient;
 import meteordevelopment.meteorclient.events.packets.PacketEvent;
 import meteordevelopment.meteorclient.events.world.TickEvent;
@@ -10,21 +9,19 @@ import meteordevelopment.meteorclient.systems.friends.Friends;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
-import meteordevelopment.meteorclient.systems.hud.screens.HudEditorScreen;
 import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import meteordevelopment.orbit.EventHandler;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 
@@ -51,7 +48,7 @@ public class TargetHud extends HudElement {
     private final Setting<Double> scale = sgGeneral.add(new DoubleSetting.Builder()
         .name("Scale")
         .description("Scale to render at")
-        .defaultValue(1)
+        .defaultValue(2)
         .range(0, 5)
         .sliderRange(0, 5)
         .build()
@@ -98,7 +95,6 @@ public class TargetHud extends HudElement {
 
     private AbstractClientPlayerEntity target;
     private String renderName = null;
-    private Identifier renderSkin = null;
     private SkinTextures renderSkinTextures = null;
     private float renderHealth;
     private float renderPing;
@@ -173,12 +169,6 @@ public class TargetHud extends HudElement {
 
     @Override
     public void render(HudRenderer renderer) {
-        if (target == null) {
-            renderSkinTextures = HudEditorScreen.isOpen() ? DefaultSkinHelper.getSteve() : null;
-        } else {
-            renderSkinTextures = target.getSkinTextures();
-        }
-
         if (mode.get() == Mode.Blackout) {
             int height = 100;
             int width = 200;
@@ -190,47 +180,102 @@ public class TargetHud extends HudElement {
                 return;
             }
 
-            MatrixStack stack = new MatrixStack();
-
             scaleProgress = MathHelper.clamp(scaleProgress + (target == null ? -renderer.delta : renderer.delta), 0, 1);
 
-            float scaleAnimation = (float) (scaleProgress * scaleProgress * scaleProgress);
+            double scaleAnimation = scaleProgress * scaleProgress * scaleProgress;
+            if (scaleAnimation < 0.01) {
+                return;
+            }
 
-            stack.translate(x + (1 - scaleAnimation) * getWidth() / 2f, y + (1 - scaleAnimation) * getHeight() / 2f, 0);
-            stack.scale((float) (scaleAnimation * scale.get()), (float) (scaleAnimation * scale.get()), 1);
+            double translateX = x + (1 - scaleAnimation) * getWidth() / 2f;
+            double translateY = y + (1 - scaleAnimation) * getHeight() / 2f;
+            double scale = scaleAnimation * this.scale.get();
 
             // Damage tilt
             float tilt = (float) (Math.max(0, 500 - System.currentTimeMillis() + damageTime) / 500f * damageTilt.get());
-            stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((tilt)));
+            // stack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((tilt)));
 
             // Background
-            RenderUtils.rounded(stack, 15, 15, width - 30, height - 30, 15, 10, bgColor.get().getPacked());
+            renderer.quad(
+                translateX,
+                translateY,
+                width * scale,
+                height * scale,
+                bgColor.get()
+            );
+            /*
+            RoundedQuadRenderer.render(
+                renderer,
+                translateX,
+                translateY,
+                width * scale,
+                height * scale,
+                15 * scale,
+                bgColor.get()
+            );
+             */
 
             // Face
             if (renderSkinTextures != null) {
-                drawFace(renderer, scaleAnimation * scale.get().floatValue(), x + (1 - scaleAnimation) * getWidth() / 2f, y + (1 - scaleAnimation) * getHeight() / 2f, tilt);
+                drawFace(renderer, (float) (scaleAnimation * this.scale.get().floatValue()), x + (1 - scaleAnimation) * getWidth() / 2f, y + (1 - scaleAnimation) * getHeight() / 2f, tilt);
             }
 
             // Name
-            RenderUtils.text(renderName, stack, 60, 20, textColor.get().getPacked());
+            renderer.text(renderName, translateX + 60 * scale, translateY + 20 * scale, textColor.get(), false, scale / 2);
 
             // Ping
-            RenderUtils.text(Math.round(renderPing) + "ms", stack, 60, 30, textColor.get().getPacked());
+            String ping = Math.round(renderPing) + "ms";
+            renderer.text(ping, translateX + 60 * scale, translateY + 30 * scale, textColor.get(), false, scale / 2);
 
             // Health
-            RenderUtils.text(String.valueOf(Math.round((renderHealth) * 10) / 10f), stack, 20, 81 - mc.textRenderer.fontHeight / 2f, textColor.get().getPacked());
+            String health = String.format("%.1f", renderHealth);
+            renderer.text(health, translateX + 20 * scale, translateY + 81 * scale - renderer.textHeight(false, scale / 2) / 2, textColor.get(), false, scale / 2);
 
-            float barAnimation = MathHelper.lerp(mc.getRenderTickCounter().getTickDelta(true) / 10, lastHp, renderHealth);
+            float barAnimation = MathHelper.lerp(mc.getRenderTickCounter().getTickProgress(true) / 10, lastHp, renderHealth);
 
             float barStart = Math.max(mc.textRenderer.getWidth(String.valueOf(Math.round((renderHealth) * 10) / 10f)),
-                mc.textRenderer.getWidth("36.0")) + 28;
+                mc.textRenderer.getWidth("36.0")) + 25;
 
             // Health Bar
             if (barAnimation > 0) {
-                RenderUtils.rounded(stack, barStart, 80, MathHelper.clamp(barAnimation / 20, 0, 1) * (width - 30 - barStart), 2, 3, 10, healthColor.get().getPacked());
+                renderer.quad(
+                    translateX + barStart * scale,
+                    translateY + 77 * scale,
+                    MathHelper.clamp(barAnimation / 20, 0, 1) * (width - 24 - barStart) * scale,
+                    8 * scale,
+                    healthColor.get()
+                );
+                /*
+                RoundedQuadRenderer.render(
+                    renderer,
+                    translateX + barStart * scale,
+                    translateY + 77 * scale,
+                    MathHelper.clamp(barAnimation / 20, 0, 1) * (width - 24 - barStart) * scale,
+                    8 * scale,
+                    3 * scale,
+                    healthColor.get()
+                );
+                 */
             }
             if (barAnimation > 20) {
-                RenderUtils.rounded(stack, barStart, 80, MathHelper.clamp((barAnimation - 20) / 16, 0, 1) * (width - 30 - barStart), 2, 3, 10, absorptionColor.get().getPacked());
+                renderer.quad(
+                    translateX + barStart * scale,
+                    translateY + 77 * scale,
+                    MathHelper.clamp((barAnimation - 20) / 16, 0, 1) * (width - 24 - barStart) * scale,
+                    8 * scale,
+                    absorptionColor.get()
+                );
+                /*
+                RoundedQuadRenderer.render(
+                    renderer,
+                    translateX + barStart * scale,
+                    translateY + 77 * scale,
+                    MathHelper.clamp((barAnimation - 20) / 16, 0, 1) * (width - 24 - barStart) * scale,
+                    8 * scale,
+                    3 * scale,
+                    absorptionColor.get()
+                );
+                 */
             }
         }
         if (mode.get() == Mode.ExhibitionOld) {
@@ -239,41 +284,40 @@ public class TargetHud extends HudElement {
             setSize(width * scale.get(), height * scale.get());
 
             updateTarget();
-            MatrixStack stack = new MatrixStack();
 
             if (target == null || renderName == null) {
                 return;
             }
 
-            stack.translate(x, y, 0);
-            stack.scale((float) (scale.get() * 1f), (float) (scale.get() * 1f), 1);
-
-
             // Background
-            RenderUtils.quad(stack, 0, 0, width, height, bgColor.get().getPacked());
+            renderer.quad(x, y, width * scale.get(), height * scale.get(), bgColor.get());
 
             // Face
-            RenderUtils.quad(stack, 1, 1, 58, 58, new Color(102, 102, 102, 255).getPacked());
+            renderer.quad(x + 1 * scale.get(), y + 1 * scale.get(), 58 * scale.get(), 58 * scale.get(), new Color(102, 102, 102, 255));
 
             if (renderSkinTextures != null) {
                 drawFace(renderer, scale.get().floatValue(), x, y, 0);
             }
 
             // Name
-            stack.scale(2.0f,2.0f,1);
-            RenderUtils.text(renderName, stack, 33, 2, textColor.get().getPacked());
+            renderer.text(renderName, x + 66 * scale.get(), y + 4 * scale.get(), textColor.get(), false, scale.get());
 
             // Health
-            stack.scale(0.5f,0.5f,1);
-            RenderUtils.text(Math.round((renderHealth) * 10) / 10f + " Dist: " + Math.round(mc.player.distanceTo(target) * 10) / 10f, stack, 66, 35 - mc.textRenderer.fontHeight / 2f, textColor.get().getPacked());
+            String healthText = Math.round((renderHealth) * 10) / 10f + " Dist: " + Math.round(mc.player.distanceTo(target) * 10) / 10f;
+            renderer.text(healthText, x + 66 * scale.get(), y + (35 * scale.get() - renderer.textHeight(false, scale.get() / 2) / 2), textColor.get(), false, scale.get() / 2);
 
             // Bar
-            stack.scale(2, 2, 1);
 
-            int progress = (int) (Math.ceil(MathHelper.clamp(renderHealth, 0, 20)));
+            int progress = MathHelper.ceil(MathHelper.clamp(renderHealth, 0, 20));
 
             for (int i = 0; i < 10; i++) {
-                RenderUtils.quad(stack, 33 + i * 8, 11, 3 * Math.min(progress, 2), 3, new Color(204, 204, 0, 255).getPacked());
+                renderer.quad(
+                    x + (66 + i * 16) * scale.get(),
+                    y + 22 * scale.get(),
+                    6 * Math.min(progress, 2) * scale.get(),
+                    6 * scale.get(),
+                    new Color(204, 204, 0, 255)
+                );
                 progress -= 2;
 
                 if (progress <= 0) {
@@ -281,48 +325,66 @@ public class TargetHud extends HudElement {
                 }
             }
 
-            stack.scale(0.5f,0.5f,1);
             // Misc info
-            RenderUtils.text("Yaw: " + Math.round((target.getYaw()) * 10) / 10f + " Pitch: " + Math.round(target.getPitch() * 10) / 10f + " BodyYaw: " + Math.round((target.getBodyYaw()) * 10) / 10f , stack, 66, 45 - mc.textRenderer.fontHeight / 2f, textColor.get().getPacked());
-            RenderUtils.text("TOG: " + (tog.getOrDefault(target, 0)) + " HURT: " + ((target.hurtTime) * 10) / 10f + " TE: " + target.age, stack, 66, 55 - mc.textRenderer.fontHeight / 2f, textColor.get().getPacked());
+            String miscTextLine1 = "Yaw: " + Math.round((target.getYaw()) * 10) / 10f + " Pitch: " + Math.round(target.getPitch() * 10) / 10f + " BodyYaw: " + Math.round((target.getBodyYaw()) * 10) / 10f;
+            renderer.text(miscTextLine1, x + 66 * scale.get(), y + (45 * scale.get() - renderer.textHeight(false, scale.get() / 2) / 2), textColor.get(), false, scale.get() / 2);
+            String miscTextLine2 = "TOG: " + (tog.getOrDefault(target, 0)) + " HURT: " + ((target.hurtTime) * 10) / 10f + " TE: " + target.age;
+            renderer.text(miscTextLine2, x + 66 * scale.get(), y + (55 * scale.get() - renderer.textHeight(false, scale.get() / 2) / 2), textColor.get(), false, scale.get() / 2);
         }
-        if (mode.get() == Mode.Exhibition){
-            int height = 60;
-            int width = 190;
-            setSize(width * scale.get(), height * scale.get());
+        if (mode.get() == Mode.Exhibition) {
+            double height = 60 * scale.get();
+            double width = 190 * scale.get();
+            setSize(width, height);
 
             updateTarget();
-            MatrixStack stack = new MatrixStack();
 
             if (target == null || renderName == null) {
                 return;
             }
 
-            stack.translate(x, y, 0);
-            stack.scale((float) (scale.get() * 1f), (float) (scale.get() * 1f), 1);
-
             // Background
-            RenderUtils.quad(stack, -2, -2, width + 4, height + 4, new Color(52, 52, 52, 255).getPacked());
-            RenderUtils.quad(stack, -1, -1, width + 2, height + 2, new Color(32, 32, 32, 255).getPacked());
-            RenderUtils.quad(stack, 0, 0, width, height, new Color(52, 52, 52, 255).getPacked());
+            renderer.quad(
+                x + -2 * scale.get(),
+                y + -2 * scale.get(),
+                width + 4 * scale.get(),
+                height + 4 * scale.get(),
+                new Color(52, 52, 52, 255)
+            );
+            renderer.quad(
+                x + -1 * scale.get(),
+                y + -1 * scale.get(),
+                width + 2 * scale.get(),
+                height + 2 * scale.get(),
+                new Color(32, 32, 32, 255)
+            );
+            renderer.quad(
+                x, y,
+                width, height,
+                new Color(52, 52, 52, 255)
+            );
 
             //PlayerModel
 
             // Name
-            stack.scale(1.5f,1.5f,1);
-            RenderUtils.text(renderName, stack, 41, 2, textColor.get().getPacked());
+            renderer.text(renderName, x + 41 * 1.5 * scale.get(), y + 2 * 1.5 * scale.get(), textColor.get(), false, 1.5 * scale.get() * 0.5);
 
             // Health and Distance
-            stack.scale(0.5f,0.5f,1);
-            RenderUtils.text(Math.round((renderHealth) * 10) / 10f + " Dist: " + Math.round(mc.player.distanceTo(target) * 10) / 10f, stack, 83, 40 - mc.textRenderer.fontHeight / 2f, textColor.get().getPacked());
+            String healthText = Math.round((renderHealth) * 10) / 10f + " Dist: " + Math.round(mc.player.distanceTo(target) * 10) / 10f;
+            renderer.text(healthText, x + 83 * 0.75 * scale.get(), y + (40 * 0.75 * scale.get()) - renderer.textHeight(false, 0.75 * scale.get() * 0.5) / 2, textColor.get(), false, 0.75 * scale.get() * 0.5);
 
             // Bar
-            stack.scale(2, 2, 1);
 
             int progress = (int) (Math.ceil(MathHelper.clamp(renderHealth, 0, 20)));
 
             for (int i = 0; i < 10; i++) {
-                RenderUtils.quad(stack, 41 + i * 8, 12, 3 * Math.min(progress, 2), 3, new Color(204, 204, 0, 255).getPacked());
+                renderer.quad(
+                    x + (41 + i * 8) * 1.5 * scale.get(),
+                    y + 12 * 1.5 * scale.get(),
+                    3 * Math.min(progress, 2) * 1.5 * scale.get(),
+                    3 * 1.5 * scale.get(),
+                    new Color(204, 204, 0, 255)
+                );
+
                 progress -= 2;
 
                 if (progress <= 0) {
@@ -330,42 +392,44 @@ public class TargetHud extends HudElement {
                 }
             }
 
-            //Armor
-            stack.scale(0.9f,0.9f,1);
-            MatrixStack drawStack = renderer.drawContext.getMatrices();
-            drawStack.push();
+            renderer.post(() -> {
+                //Armor
+                MatrixStack drawStack = renderer.drawContext.getMatrices();
+                drawStack.push();
 
-            drawStack.translate(x, y, 0);
-            drawStack.scale(scale.get().floatValue() * 1.35f, scale.get().floatValue() * 1.35f, 1);
+                drawStack.translate(x, y, 0);
+                drawStack.scale(scale.get().floatValue() * 1.35f, scale.get().floatValue() * 1.35f, 1);
 
-            for (int i = 0; i < 4; i++) {
-                ItemStack itemStack = target.getInventory().armor.get(i);
+                for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                    ItemStack itemStack = mc.player.getEquippedStack(slot);
 
-                renderer.drawContext.drawItem(itemStack, (3 - i) * 20 + 42, 25);
-            }
+                    renderer.drawContext.drawItem(itemStack, (3 - slot.getIndex()) * 20 + 42, 25);
+                }
 
-            //Item
-            ItemStack itemStack = target.getMainHandStack();
+                //Item
+                ItemStack itemStack = target.getMainHandStack();
 
-            renderer.drawContext.drawItem(itemStack, 122, 25);
+                renderer.drawContext.drawItem(itemStack, 122, 25);
 
-            drawStack.pop();
-            // gayer model
+                drawStack.pop();
+            });
         }
     }
 
     private void drawFace(HudRenderer renderer, float scale, double x, double y, float tilt) {
-        MatrixStack drawStack = renderer.drawContext.getMatrices();
+        renderer.post(() -> {
+            MatrixStack drawStack = renderer.drawContext.getMatrices();
 
-        drawStack.push();
+            drawStack.push();
 
-        drawStack.translate(x, y, 0);
-        drawStack.scale(scale, scale, 1);
-        drawStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
+            drawStack.translate(x, y, 0);
+            drawStack.scale(scale, scale, 1);
+            drawStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
 
-        PlayerSkinDrawer.draw(renderer.drawContext, renderSkinTextures, 20, 18, 32, -1);
+            PlayerSkinDrawer.draw(renderer.drawContext, renderSkinTextures, 20, 18, 32, -1);
 
-        drawStack.pop();
+            drawStack.pop();
+        });
     }
 
     private void updateTarget() {
@@ -394,8 +458,8 @@ public class TargetHud extends HudElement {
 
         if (target != null) {
             renderName = target.getName().getString();
-            renderSkin = target.getSkinTextures().texture();
             renderHealth = target.getHealth() + target.getAbsorptionAmount();
+            renderSkinTextures = target.getSkinTextures();
 
             PlayerListEntry playerListEntry = mc.getNetworkHandler().getPlayerListEntry(target.getUuid());
             renderPing = playerListEntry == null ? -1 : playerListEntry.getLatency();

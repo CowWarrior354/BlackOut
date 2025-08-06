@@ -90,7 +90,7 @@ public class RotationManager {
         timer -= event.frameTime;
         if (timer > 0 && target != null && lastDir != null) {
             if (SettingUtils.shouldVanillaRotate()) {
-                float tickDelta = mc.getRenderTickCounter().getTickDelta(true);
+                float tickDelta = mc.getRenderTickCounter().getTickProgress(true);
                 mc.player.setYaw(MathHelper.lerpAngleDegrees(tickDelta, prevDir[0], currentDir[0]));
                 mc.player.setPitch(MathHelper.lerp(tickDelta, prevDir[1], currentDir[1]));
             }

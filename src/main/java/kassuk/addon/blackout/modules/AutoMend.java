@@ -16,6 +16,7 @@ import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.orbit.EventHandler;
 import meteordevelopment.orbit.EventPriority;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.Hand;
@@ -24,6 +25,8 @@ import net.minecraft.util.math.BlockPos;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 /**
  * @author OLEPOSSU
@@ -305,8 +308,9 @@ public class AutoMend extends BlackOutModule {
 
     private boolean shouldMend() {
         List<ItemStack> armors = new ArrayList<>();
+        EquipmentSlot[] armorSlots = {EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD};
 
-        for (int i = 0; i < 4; i++) armors.add(mc.player.getInventory().getArmorStack(i));
+        for (int i = 0; i < 4; i++) armors.add(mc.player.getEquippedStack(armorSlots[i]));
 
         float max = -1;
         float lowest = 500;

@@ -22,9 +22,7 @@ public class MixinExplosion {
         method = "onExplosion",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/world/ClientWorld;playSound(DDD"
-                + "Lnet/minecraft/sound/SoundEvent;"
-                + "Lnet/minecraft/sound/SoundCategory;FFZ)V"
+            target = "Lnet/minecraft/client/world/ClientWorld;playSoundClient(DDDLnet/minecraft/sound/SoundEvent;Lnet/minecraft/sound/SoundCategory;FFZ)V"
         )
     )
     private void onExplosion(ClientWorld instance, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance, Operation<Void> original) {

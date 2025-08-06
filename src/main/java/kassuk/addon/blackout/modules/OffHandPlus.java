@@ -16,6 +16,7 @@ import meteordevelopment.orbit.EventPriority;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.item.*;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -159,7 +160,7 @@ public class OffHandPlus extends BlackOutModule {
     }
 
     private Item getItem() {
-        if (mc.player.getMainHandStack().getItem() instanceof SwordItem && (!safeSword.get() || !inDanger())) {
+        if (mc.player.getMainHandStack().isIn(ItemTags.SWORDS) && (!safeSword.get() || !inDanger())) {
             if (gapMode.get().sword) {
                 switch (swordMode.get()) {
                     case Always -> {

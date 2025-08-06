@@ -40,6 +40,8 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.commons.lang3.mutable.MutableInt;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -149,9 +151,17 @@ public class BODamageUtils {
     }
 
     public static double applyProtection(LivingEntity entity, double damage, boolean explosions) {
-        int i = getProtectionAmount(entity.getArmorItems(), explosions);
-        if (i > 0)
-            damage *= (1 - MathHelper.clamp(i, 0f, 20f) / 25);
+        int protectionAmount = 0;
+
+        List<ItemStack> armorItems = new ArrayList<>();
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            armorItems.add(entity.getEquippedStack(slot));
+        }
+        protectionAmount = getProtectionAmount(armorItems, explosions);
+
+        if (protectionAmount > 0) {
+            damage *= (1 - MathHelper.clamp(protectionAmount, 0f, 20f) / 25);
+        }
 
         return damage;
     }

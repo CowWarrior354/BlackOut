@@ -69,8 +69,8 @@ public class JesusPlus extends BlackOutModule {
                     if (mc.player.hasStatusEffect(StatusEffects.SLOWNESS)) {
                         motion /= 1.2 + mc.player.getStatusEffect(StatusEffects.SLOWNESS).getAmplifier() * 0.2;
                     }
-                    double forward = mc.player.input.movementForward;
-                    double sideways = mc.player.input.movementSideways;
+                    double forward = mc.player.input.getMovementInput().y;
+                    double sideways = mc.player.input.getMovementInput().x;
 
                     double yaw = getYaw(forward, sideways);
                     double x = Math.cos(Math.toRadians(yaw + 90.0f));

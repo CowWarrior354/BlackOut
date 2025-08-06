@@ -30,7 +30,7 @@ public class ExtrapolationUtils {
         Map<AbstractClientPlayerEntity, List<Vec3d>> newMotions = new HashMap<>();
 
         for (AbstractClientPlayerEntity player : mc.world.getPlayers()) {
-            Vec3d vec = player.getPos().subtract(player.prevX, player.prevY, player.prevZ);
+            Vec3d vec = player.getPos().subtract(player.lastX, player.lastY, player.lastZ);
 
             if (!motions.containsKey(player)) {
                 List<Vec3d> v = new ArrayList<>();

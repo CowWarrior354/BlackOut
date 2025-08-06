@@ -60,17 +60,4 @@ public abstract class MixinClientPlayerEntity {
     private void sendPacketPosGround(ClientPlayNetworkHandler instance, Packet<?> packet) {
         networkHandler.sendPacket(Managers.ROTATION.onPositionOnGround((PlayerMoveC2SPacket.PositionAndOnGround) packet));
     }
-
-    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V", ordinal = 4))
-    private void sendPacketLookGround(ClientPlayNetworkHandler instance, Packet<?> packet) {
-        PlayerMoveC2SPacket toSend = Managers.ROTATION.onLookAndOnGround((PlayerMoveC2SPacket.LookAndOnGround) packet);
-        if (toSend != null) {
-            networkHandler.sendPacket(toSend);
-        }
-    }
-
-    @Redirect(method = "sendMovementPackets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V", ordinal = 5))
-    private void sendPacketGround(ClientPlayNetworkHandler instance, Packet<?> packet) {
-        networkHandler.sendPacket(Managers.ROTATION.onOnlyOnground((PlayerMoveC2SPacket.OnGroundOnly) packet));
-    }
 }

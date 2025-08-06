@@ -37,10 +37,10 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.SwordItem;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.*;
 
@@ -561,7 +561,7 @@ public class AutoMine extends BlackOutModule {
 
     private boolean isPaused() {
         if (pauseEat.get() && mc.player.isUsingItem()) return true;
-        return pauseSword.get() && mc.player.getMainHandStack().getItem() instanceof SwordItem;
+        return pauseSword.get() && mc.player.getMainHandStack().isIn(ItemTags.SWORDS);
     }
 
     private boolean civCheck() {

@@ -8,6 +8,7 @@ import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 
@@ -98,8 +99,9 @@ public class GearHud extends HudElement {
     private double armorDur() {
         double rur = 0;
         if (mc.player != null) {
+            EquipmentSlot[] armorSlots = {EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD};
             for (int i = 0; i < 4; i++) {
-                rur += mc.player.getInventory().armor.get(i).getMaxDamage();
+                rur += mc.player.getEquippedStack(armorSlots[i]).getMaxDamage();
             }
         }
         return rur;

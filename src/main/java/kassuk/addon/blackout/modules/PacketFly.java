@@ -375,7 +375,7 @@ public class PacketFly extends BlackOutModule {
     }
 
     private double getYaw() {
-        double f = mc.player.input.movementForward, s = mc.player.input.movementSideways;
+        double f = mc.player.input.getMovementInput().y, s = mc.player.input.getMovementInput().x;
 
         double yaw = mc.player.getYaw();
         if (f > 0) {

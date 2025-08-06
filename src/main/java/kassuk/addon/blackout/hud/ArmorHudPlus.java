@@ -1,13 +1,14 @@
 package kassuk.addon.blackout.hud;
 
 import kassuk.addon.blackout.BlackOut;
-import kassuk.addon.blackout.utils.RenderUtils;
 import meteordevelopment.meteorclient.settings.*;
 import meteordevelopment.meteorclient.systems.hud.HudElement;
 import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
+import meteordevelopment.meteorclient.utils.render.color.Color;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
@@ -24,8 +25,8 @@ public class ArmorHudPlus extends HudElement {
         .name("Scale")
         .description("Scale to render at.")
         .defaultValue(1)
-        .range(0, 5)
-        .sliderRange(0, 5)
+        .range(0.1, 5)
+        .sliderRange(0.1, 5)
         .build()
     );
     private final Setting<Integer> rounding = sgGeneral.add(new IntSetting.Builder()
@@ -34,6 +35,7 @@ public class ArmorHudPlus extends HudElement {
         .defaultValue(50)
         .range(0, 100)
         .sliderRange(0, 100)
+        .visible(() -> false) // trick to keep configs while rounding is temporarily disabled
         .build()
     );
     private final Setting<Boolean> bg = sgGeneral.add(new BoolSetting.Builder()
@@ -78,31 +80,55 @@ public class ArmorHudPlus extends HudElement {
         stack.scale((float)(scale.get() * 2), (float)(scale.get() * 2), 1);
 
         if (bg.get()) {
-            RenderUtils.rounded(stack, rounding.get() * 0.14f, rounding.get() * 0.14f, 100 - rounding.get() * 0.28f, 28 - rounding.get() * 0.28f, rounding.get() * 0.14f, 10, bgColor.get().getPacked());
+            renderer.quad(
+                x,
+                y,
+                100 * scale.get() * 2,
+                28 * scale.get() * 2,
+                bgColor.get()
+            );
+            /*
+            RoundedQuadOld.render(
+                renderer,
+                x,
+                y,
+                100 * scale.get() * 2,
+                28 * scale.get() * 2,
+                (rounding.get() * 0.14f) * scale.get() * 2,
+                bgColor.get()
+            );
+             */
         }
 
-        MatrixStack drawStack = renderer.drawContext.getMatrices();
-        drawStack.push();
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            ItemStack itemStack = mc.player.getEquippedStack(slot);
 
-        drawStack.translate(x, y, 0);
-        drawStack.scale((float)(scale.get() * 2), (float)(scale.get() * 2), 1);
+            if (itemStack.isEmpty()) continue;
 
-        for (int i = 3; i >= 0; i--) {
-            ItemStack itemStack = mc.player.getInventory().armor.get(i);
-
-            renderer.drawContext.drawItem(itemStack, i * 20 + 12, durMode.get() == DurMode.Top ? 10 : 0);
-
-            if (itemStack.isEmpty()) {continue;}
-
-            centeredText(stack,
-                String.valueOf(Math.round(100 - (float) itemStack.getDamage() / itemStack.getMaxDamage() * 100f)),
-                i * 20 + 20, durMode.get() == DurMode.Top ? 3 : 17, durColor.get().getPacked());
+            String text = String.valueOf(Math.round(100 - (float) itemStack.getDamage() / itemStack.getMaxDamage() * 100f));
+            centeredText(renderer, text, x + (slot.getIndex() * 40 + 40) * scale.get(), y + (durMode.get() == DurMode.Top ? 6 : 34) * scale.get(), 40 * scale.get(), durColor.get(), scale.get());
         }
-        drawStack.pop();
+
+        renderer.post(() -> {
+            MatrixStack drawStack = renderer.drawContext.getMatrices();
+            drawStack.push();
+
+            drawStack.translate(x, y, 0);
+            drawStack.scale((float)(scale.get() * 2), (float)(scale.get() * 2), 1);
+
+            for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+                ItemStack itemStack = mc.player.getEquippedStack(slot);
+                renderer.drawContext.drawItem(itemStack, slot.getIndex() * 20 + 12, durMode.get() == DurMode.Top ? 10 : 0);
+            }
+
+            drawStack.pop();
+        });
     }
 
-    private void centeredText(MatrixStack stack, String text, int x, int y, int color) {
-        RenderUtils.text(text, stack, x - mc.textRenderer.getWidth(text) / 2f, y, color);
+    private void centeredText(HudRenderer renderer, String text, double x, double y, double width, Color color, double scale) {
+        double textWidth = renderer.textWidth(text, false, scale);
+        double offset = (width - textWidth) / 2;
+        renderer.text(text, x + offset, y, color, false, scale);
     }
 
     public enum DurMode {

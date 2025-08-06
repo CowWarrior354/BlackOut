@@ -110,7 +110,7 @@ public class FlightPlus extends BlackOutModule {
     @EventHandler
     private void onMove(PlayerMoveEvent event){
         if (mc.player != null && mc.world != null){
-            double[] result = getYaw(mc.player.input.movementForward, mc.player.input.movementSideways);
+            double[] result = getYaw(mc.player.input.getMovementInput().y, mc.player.input.getMovementInput().x);
             float yaw = (float) result[0] + 90;
             double x = 0, y = tick % antiKickDelay.get() == 0 ? antiKickAmount.get() * -0.04 : 0, z = 0;
             if (flyMode.get().equals(FlightMode.Momentum)){

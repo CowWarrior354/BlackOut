@@ -444,8 +444,10 @@ public class HoleFillPlus extends BlackOutModule {
         Map<AbstractClientPlayerEntity, List<Movement>> newMap = new HashMap<>();
 
         for (AbstractClientPlayerEntity player : mc.world.getPlayers()) {
-            Movement m = new Movement(MathHelper.wrapDegrees((float) Math.toDegrees(Math.atan2(player.getZ() - player.prevZ, player.getX() - player.prevX)) - 90f), player.getPos());
-
+            Movement m = new Movement(
+                MathHelper.wrapDegrees((float)Math.toDegrees(Math.atan2(player.getZ() - player.lastZ, player.getX() - player.lastX)) - 90f),
+                player.getPos()
+            );
             if (!walkAngles.containsKey(player)) {
                 List<Movement> l = new ArrayList<>();
                 l.add(m);

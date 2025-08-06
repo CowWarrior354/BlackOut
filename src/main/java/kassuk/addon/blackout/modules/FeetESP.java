@@ -79,11 +79,11 @@ public class FeetESP extends BlackOutModule {
             if (!other.get() && player != mc.player && !Friends.get().isFriend(player)) return;
             if (!self.get() && mc.player == player) return;
 
-            float tickDelta = mc.getRenderTickCounter().getTickDelta(true);
+            float tickDelta = mc.getRenderTickCounter().getTickProgress(true);
             render(event, new Vec3d(
-                MathHelper.lerp(tickDelta, player.prevX, player.getX()),
-                MathHelper.lerp(tickDelta, player.prevY, player.getY()),
-                MathHelper.lerp(tickDelta, player.prevZ, player.getZ())
+                MathHelper.lerp(tickDelta, player.lastX, player.getX()),
+                MathHelper.lerp(tickDelta, player.lastY, player.getY()),
+                MathHelper.lerp(tickDelta, player.lastZ, player.getZ())
             ));
         });
     }

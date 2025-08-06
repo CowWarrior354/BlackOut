@@ -593,7 +593,7 @@ public class SurroundPlus extends BlackOutModule {
         if (!(item instanceof BlockItem block)) {return;}
 
         mc.world.setBlockState(pos, block.getBlock().getDefaultState());
-        mc.world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1, 1, false);
+        mc.world.playSound(mc.player, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.BLOCK_STONE_PLACE, SoundCategory.BLOCKS, 1, 1);
     }
 
     private void setSupport() {

@@ -355,7 +355,7 @@ public class ScaffoldPlus extends BlackOutModule {
     void yVel() {
         if (!tower.get()) return;
 
-        if (mc.options.jumpKey.isPressed() && mc.player.input.movementForward == 0 && mc.player.input.movementSideways == 0) {
+        if (mc.options.jumpKey.isPressed() && mc.player.input.getMovementInput().y == 0 && mc.player.input.getMovementInput().x == 0) {
             if (mc.player.isOnGround() || jumpProgress == 3) {
                 jumpProgress = 0;
             }

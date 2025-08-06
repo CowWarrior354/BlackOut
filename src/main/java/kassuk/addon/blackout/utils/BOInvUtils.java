@@ -4,12 +4,18 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import kassuk.addon.blackout.managers.Managers;
+import kassuk.addon.blackout.mixins.ComponentHasherNetworkHandlerAccessor;
+import meteordevelopment.meteorclient.mixin.ClientPlayNetworkHandlerAccessor;
 import meteordevelopment.meteorclient.mixininterface.IClientPlayerInteractionManager;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.ClickSlotC2SPacket;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.screen.sync.ComponentChangesHash;
+import net.minecraft.screen.sync.ItemStackHash;
 
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
@@ -39,16 +45,26 @@ public class BOInvUtils {
             // actionType: use SlotActionType.PICKUP for a normal click (or change as needed)
             SlotActionType actionType = SlotActionType.PICKUP;
 
-            // Get the current item stack from the slot; this might be the item you’re about to move.
             ItemStack stack = mc.player.currentScreenHandler.getSlot(slot).getStack();
 
-            // Create an empty map for modified stacks.
-            // If your use-case requires sending updated stacks for other slots, populate this accordingly.
-            Int2ObjectMap<ItemStack> modifiedStacks = new Int2ObjectOpenHashMap<>();
+            Int2ObjectMap<ItemStackHash> modifiedStacks = new Int2ObjectOpenHashMap<>();
 
-            // Create and send the ClickSlotC2SPacket with the specified parameters.
-            ClickSlotC2SPacket packet = new ClickSlotC2SPacket(syncId, revision, slot, button, actionType, stack, modifiedStacks);
+            ComponentChangesHash.ComponentHasher componentHasher = ((ComponentHasherNetworkHandlerAccessor) mc.getNetworkHandler()).getComponentHasher();
+            ItemStackHash stackHash = ItemStackHash.fromItemStack(stack, componentHasher);
+
+            ClickSlotC2SPacket packet = new ClickSlotC2SPacket(
+                syncId,
+                revision,
+                (short) slot,
+                (byte) button,
+                actionType,
+                modifiedStacks,
+                stackHash
+            );
+
             mc.getNetworkHandler().sendPacket(packet);
+
+
 
             return true;
         }
@@ -71,11 +87,20 @@ public class BOInvUtils {
             ItemStack stack = mc.player.currentScreenHandler.getSlot(pickSlot).getStack();
 
             // Create an empty map for modified stacks (populate if needed).
-            Int2ObjectMap<ItemStack> modifiedStacks = new Int2ObjectOpenHashMap<>();
+            Int2ObjectMap<ItemStackHash> modifiedStacks = new Int2ObjectOpenHashMap<>();
 
-            // Create and send the ClickSlotC2SPacket with the specified parameters.
-            ClickSlotC2SPacket packet = new ClickSlotC2SPacket(syncId, revision, pickSlot, button, actionType, stack, modifiedStacks);
-            mc.getNetworkHandler().sendPacket(packet);
+            ComponentChangesHash.ComponentHasher componentHasher = ((ComponentHasherNetworkHandlerAccessor) mc.getNetworkHandler()).getComponentHasher();
+            ItemStackHash stackHash = ItemStackHash.fromItemStack(stack, componentHasher);
+
+            ClickSlotC2SPacket packet = new ClickSlotC2SPacket(
+                syncId,
+                revision,
+                (short) pickSlot,
+                (byte) button,
+                actionType,
+                modifiedStacks,
+                stackHash
+            );mc.getNetworkHandler().sendPacket(packet);
 
             // Reset pickSlot after sending the packet.
             pickSlot = -1;
@@ -86,12 +111,14 @@ public class BOInvUtils {
     public static boolean invSwitch(int slot) {
         if (slot >= 0) {
             ScreenHandler handler = mc.player.currentScreenHandler;
-            Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
-            stack.put(slot, handler.getSlot(slot).getStack());
+            ItemStack stack = handler.getSlot(slot).getStack();
+            ComponentChangesHash.ComponentHasher componentHasher = ((ComponentHasherNetworkHandlerAccessor) mc.getNetworkHandler()).getComponentHasher();
+            ItemStackHash stackHash = ItemStackHash.fromItemStack(stack, componentHasher);
+            Int2ObjectMap<ItemStackHash> modifiedStacks = new Int2ObjectOpenHashMap<>();
 
             mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
-                handler.getRevision(), PlayerInventory.MAIN_SIZE + Managers.HOLDING.slot,
-                slot, SlotActionType.SWAP, handler.getSlot(slot).getStack(), stack)
+                handler.getRevision(), (short) (PlayerInventory.MAIN_SIZE + Managers.HOLDING.slot),
+                (byte) slot, SlotActionType.SWAP, modifiedStacks, stackHash)
             );
             ((IClientPlayerInteractionManager) mc.interactionManager).meteor$syncSelected();
             slots = new int[]{slot, Managers.HOLDING.slot};
@@ -102,12 +129,15 @@ public class BOInvUtils {
 
     public static void swapBack() {
         ScreenHandler handler = mc.player.currentScreenHandler;
-        Int2ObjectArrayMap<ItemStack> stack = new Int2ObjectArrayMap<>();
-        stack.put(slots[0], handler.getSlot(slots[0]).getStack());
+        int slot = slots[0];
+        ItemStack stack = handler.getSlot(slot).getStack();
+        ComponentChangesHash.ComponentHasher componentHasher = ((ComponentHasherNetworkHandlerAccessor) mc.getNetworkHandler()).getComponentHasher();
+        ItemStackHash stackHash = ItemStackHash.fromItemStack(stack, componentHasher);
+        Int2ObjectMap<ItemStackHash> modifiedStacks = new Int2ObjectOpenHashMap<>();
 
         mc.getNetworkHandler().sendPacket(new ClickSlotC2SPacket(handler.syncId,
-            handler.getRevision(), PlayerInventory.MAIN_SIZE + slots[1],
-            slots[0], SlotActionType.SWAP, handler.getSlot(slots[0]).getStack().copy(), stack)
+            handler.getRevision(), (short) (PlayerInventory.MAIN_SIZE + slots[1]),
+            (byte) slots[0], SlotActionType.SWAP, modifiedStacks, stackHash)
         );
         ((IClientPlayerInteractionManager) mc.interactionManager).meteor$syncSelected();
     }

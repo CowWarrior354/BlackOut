@@ -174,12 +174,12 @@ public class ElytraFlyPlus extends BlackOutModule {
     }
 
     private Vec3d getMotion(Vec3d velocity) {
-        if (mc.player.input.movementForward == 0) {
+        if (mc.player.input.getMovementInput().y == 0) {
             if (constStop.get()) return new Vec3d(0, 0, 0);
             return null;
         }
 
-        boolean forward = mc.player.input.movementForward > 0;
+        boolean forward = mc.player.input.getMovementInput().y > 0;
 
         double yaw = Math.toRadians(mc.player.getYaw() + (forward ? 90 : -90));
 
@@ -230,8 +230,8 @@ public class ElytraFlyPlus extends BlackOutModule {
     private void updateWaspMovement() {
         float yaw = mc.player.getYaw();
 
-        float f = mc.player.input.movementForward;
-        float s = mc.player.input.movementSideways;
+        float f = mc.player.input.getMovementInput().y;
+        float s = mc.player.input.getMovementInput().x;
 
         if (f > 0) {
             moving = true;
@@ -289,8 +289,8 @@ public class ElytraFlyPlus extends BlackOutModule {
     private void updateControlMovement() {
         float yaw = mc.player.getYaw();
 
-        float f = mc.player.input.movementForward;
-        float s = mc.player.input.movementSideways;
+        float f = mc.player.input.getMovementInput().y;
+        float s = mc.player.input.getMovementInput().x;
 
         if (f > 0) {
             moving = true;
