@@ -11,7 +11,7 @@ such as a new and improved CrystalAura, BedAura and PacketFly and a lot more of 
 The development of the addon might not be super active due to us having our own lives contrary to the popular belief.
 
 ### How to use Blackout:
- - Install Fabric 1.21.4.
+ - Install Fabric 1.21.5.
  - Download Meteor Client and put it in your mod's folder.
  - Put Blackout in your "mods" folder with Meteor.
  - Run Fabric.
@@ -25,7 +25,7 @@ Doogie13 for helping with the block mining calculations and step offsets.
 
 RickyTheRaccoon for his InvSwitch.
 
-H1ggsK for updating to 1.21.4.
+H1ggsK for updating to 1.21.4+.
 
 [#### Official youtube channel https://www.youtube.com/channel/UCq_NxTxgS-Xk0TsSmhqXoyg]: #
 
