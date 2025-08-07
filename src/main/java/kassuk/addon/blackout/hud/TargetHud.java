@@ -16,15 +16,12 @@ import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.util.SkinTextures;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
 
 import java.util.*;
@@ -205,21 +202,10 @@ public class TargetHud extends HudElement {
                 height * scale,
                 bgColor.get()
             );
-            /*
-            RoundedQuadRenderer.render(
-                renderer,
-                translateX,
-                translateY,
-                width * scale,
-                height * scale,
-                15 * scale,
-                bgColor.get()
-            );
-             */
 
             // Face
             if (renderSkinTextures != null) {
-                drawFace(renderer, (float) (scaleAnimation * this.scale.get().floatValue()), x + (1 - scaleAnimation) * getWidth() / 2f, y + (1 - scaleAnimation) * getHeight() / 2f, tilt);
+                drawFace(renderer, (float) scale / 2, (translateX / 2) + 20, (translateY / 2) + 18, tilt);
             }
 
             // Name
@@ -281,7 +267,7 @@ public class TargetHud extends HudElement {
             }
         }
         if (mode.get() == Mode.ExhibitionOld) {
-            int height = 60;
+            int height = 64;
             int width = 240;
             setSize(width * scale.get(), height * scale.get());
 
@@ -298,11 +284,11 @@ public class TargetHud extends HudElement {
             renderer.quad(x + 1 * scale.get(), y + 1 * scale.get(), 58 * scale.get(), 58 * scale.get(), new Color(102, 102, 102, 255));
 
             if (renderSkinTextures != null) {
-                drawFace(renderer, scale.get().floatValue(), x, y, 0);
+                drawFace(renderer, scale.get().floatValue(), x / 2f, y / 2f, 0);
             }
 
             // Name
-            renderer.text(renderName, x + 66 * scale.get(), y + 4 * scale.get(), textColor.get(), false, scale.get());
+            renderer.text(renderName, x + 66 * scale.get(), y + 4 * scale.get(), textColor.get(), false, scale.get() / 2);
 
             // Health
             String healthText = Math.round((renderHealth) * 10) / 10f + " Dist: " + Math.round(mc.player.distanceTo(target) * 10) / 10f;
@@ -399,19 +385,19 @@ public class TargetHud extends HudElement {
                 Matrix3x2fStack drawStack = renderer.drawContext.getMatrices();
                 drawStack.pushMatrix();
 
-                drawStack.translate(x, y, 0);
-                drawStack.scale(scale.get().floatValue() * 1.35f, scale.get().floatValue() * 1.35f, 1);
+                drawStack.translate(x, y);
+                drawStack.scale(scale.get().floatValue() * 1.35f, scale.get().floatValue() * 1.35f);
 
                 for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
                     ItemStack itemStack = mc.player.getEquippedStack(slot);
 
-                    renderer.drawContext.drawItem(itemStack, (3 - slot.getIndex()) * 20 + 42, 25);
+                    renderer.item(itemStack, (3 - slot.getIndex()) * 20 + 42, 25, scale.get().floatValue(), false);
                 }
 
                 //Item
                 ItemStack itemStack = target.getMainHandStack();
 
-                renderer.drawContext.drawItem(itemStack, 122, 25);
+                renderer.item(itemStack, 122, 25, scale.get().floatValue(), false);
 
                 drawStack.popMatrix();
             });
@@ -424,11 +410,11 @@ public class TargetHud extends HudElement {
 
             drawStack.pushMatrix();
 
-            drawStack.translate((float) x, (float) y, 0);
-            drawStack.scale(scale, scale, 1);
-            drawStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(tilt));
+            drawStack.translate((float) x, (float) y);
+            drawStack.scale(scale, scale);
+            drawStack.rotate(tilt);
 
-            PlayerSkinDrawer.draw(renderer.drawContext, renderSkinTextures, 20, 18, 32, -1);
+            PlayerSkinDrawer.draw(renderer.drawContext, renderSkinTextures, 0, 0, 32, -1);
 
             drawStack.popMatrix();
         });

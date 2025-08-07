@@ -7,11 +7,9 @@ import meteordevelopment.meteorclient.systems.hud.HudElementInfo;
 import meteordevelopment.meteorclient.systems.hud.HudRenderer;
 import meteordevelopment.meteorclient.utils.player.InvUtils;
 import meteordevelopment.meteorclient.utils.render.color.SettingColor;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import org.joml.Matrix3x2f;
 import org.joml.Matrix3x2fStack;
 
 import java.util.List;
@@ -75,10 +73,9 @@ public class GearHud extends HudElement {
             Matrix3x2fStack drawStack = renderer.drawContext.getMatrices();
             drawStack.pushMatrix();
 
-            drawStack.translate(x, y, 0);
-            drawStack.scale((float)(scale.get() * scale.get()), (float)(scale.get() * scale.get()), 1);
+            drawStack.scale(scale.get().floatValue(), scale.get().floatValue());
 
-            renderer.drawContext.drawItem(items.get().get(i).getDefaultStack(), x, posY);
+            renderer.item(items.get().get(i).getDefaultStack(), (int)(x / scale.get()), (int)(posY / scale.get()), scale.get().floatValue(), false);
 
             drawStack.popMatrix();
 

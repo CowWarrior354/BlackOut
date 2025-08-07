@@ -4,14 +4,12 @@ import kassuk.addon.blackout.modules.AntiCrawl;
 import kassuk.addon.blackout.modules.ForceSneak;
 import kassuk.addon.blackout.modules.StepPlus;
 import meteordevelopment.meteorclient.systems.modules.Modules;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
@@ -39,12 +37,6 @@ public abstract class MixinEntity {
 
     @Shadow
     public abstract ActionResult interact(PlayerEntity player, Hand hand);
-
-    @Shadow
-    protected abstract void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition);
-
-    @Shadow
-    protected abstract boolean stepOnBlock(BlockPos pos, BlockState state, boolean playSound, boolean emitEvent, Vec3d movement);
 
     @Shadow
     public abstract float getStepHeight();

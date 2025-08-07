@@ -5,6 +5,7 @@
   "client": [
     "AccessorMinecraftClient",
     "AccessorNbtCompound",
+    "ComponentHasherNetworkHandlerAccessor",
     "IBlockSettings",
     "IEntityS2CPacket",
     "IEntitySetHeadYawS2CPacket",
@@ -16,6 +17,7 @@
     "ISpectatorTeleportC2SPacket",
     "MixinClientCommonNetworkHandler",
     "MixinClientConnection",
+    "MixinClientPlayerEntity",
     "MixinClientPlayerInteractionManager",
     "MixinEntity",
     "MixinExplosion",
@@ -24,8 +26,5 @@
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": [
-    "ComponentHasherNetworkHandlerAccessor"
-  ]
+  }
 }
